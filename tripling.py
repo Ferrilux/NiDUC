@@ -1,6 +1,8 @@
+import sys
 import signal
 import random
 import math
+import numpy as np
 import cv2
 
 # obsługa przerwań
@@ -22,40 +24,86 @@ def img_to_bw(image):
     _, bw_img = cv2.threshold(image, 127, 255, cv2.THRESH_BINARY)
     return bw_img
 
-# konwersja obrazu czarno-białego do postaci zerojedynkowej
+# konwersja obrazu czarno-białego do postaci zerojedynkowej listy
 def bw_to_bin(image):
-    for i in range(len(image)):
-        for j in range(len(image[i])):
+    size_x = len(image)
+    size_y = len(image[0])
+    bin_out = []
+    for i in range(size_x):
+        for j in range(size_y):
             if image[i][j]:
-                image[i][j] = 1
-    return image
+                bin_out.append(1)
+            else: 
+                bin_out.append(0)
+    return {'x': size_x, 'y': size_y}, bin_out
 
-# konwersja postaci zerojedynkowej na obraz czarno-biały
-def bin_to_bw(image):
-    for i in range(len(image)):
-        for j in range(len(image[i])):
-            if image[i][j]:
+# konwersja postaci zerojedynkowej listy na obraz czarno-biały
+def bin_to_bw(bin_in, size):
+    image = np.empty([size['x'], size['y']])
+    for i in range(size['x']):
+        for j in range(size['y']):
+            index = i*size['y']+j
+            if bin_in[index]:
                 image[i][j] = 255
+            else:
+                image[i][j] = 0
     return image
 
 # przekłamanie wartości podanej ilości losowych bitów
-def gen_trans_err(data_bin, bit_cnt):
+def gen_trans_err(data_bin, err_percent, seed=None):
+    length = len(data_bin)
+    bit_cnt = math.ceil(err_percent * len(data_bin) / 100)
+    
+    if not seed:
+        seed = random.randint(0, sys.maxsize * 2 + 1)
+    random.seed(seed)
+    
     for _ in range(bit_cnt):
-        size_x = len(data_bin)
-        size_y = len(data_bin[0])
-        rand_x = random.randint(0, size_x-1)
-        rand_y = random.randint(0, size_y-1)
+        rand_l = random.randint(0, length-1)
 
-        if data_bin[rand_x][rand_y]:
-            data_bin[rand_x][rand_y] = 0
+        if data_bin[rand_l]:
+            data_bin[rand_l] = 0
         else:
-            data_bin[rand_x][rand_y] = 1
-    return data_bin
+            data_bin[rand_l] = 1
+    return data_bin, seed
+
+# powielenie bitów
+def multiple_bits(bin_in, bit_cnt):
+    bin_out = []
+    for _, value in enumerate(bin_in):
+        for _ in range(bit_cnt):
+            bin_out.append(value)
+    return bin_out
+
+# odpowielenie bitów
+def demultiple_bits(bin_in, bit_cnt):
+    bin_out = []
+    for i in range(int(len(bin_in)/bit_cnt)):
+        index = i*bit_cnt
+        bin_out.append(bin_in[index])
+    return bin_out
+
+# naprawa przekłamań w powielonych bitach
+def fix_multiple_bits(bin_in, bit_cnt):
+    bin_out = []
+    for i in range(int(len(bin_in)/bit_cnt)):
+        ones_cnt = 0
+        set_all = 0
+        index = i*bit_cnt
+        for j in range(bit_cnt):
+            if bin_in[index+j]:
+                ones_cnt = ones_cnt + 1
+        if ones_cnt > bit_cnt/2:
+            set_all = 1
+        for _ in range(bit_cnt):
+            bin_out.append(set_all)
+    return bin_out
 
 def main():
     file = 'example.jpg'
     trans_err = 5 # liczba bitów do przekłamania w procentach
-
+    multiple_by = 3 # liczba powielenia kazdego bitu
+    
     # wczytanie pliku jpg w skali szarości
     image = cv2.imread(file, 0)
     show_img(image)
@@ -64,22 +112,25 @@ def main():
     bw_image = img_to_bw(image)
     show_img(bw_image)
 
-    # przekłamanie losowych bitów
-    data_bin = bw_to_bin(bw_image)
-    print(data_bin)
+    # Konwersja do listy zero-jedynkowej
+    size, data_bin = bw_to_bin(bw_image)
 
-    bit_count = len(data_bin) * len(data_bin[0])
-    print("Długość przesyłanego ciągu bitów: ")
-    print(bit_count)
+    # Powielenie bitów
+    data_bin = multiple_bits(data_bin, multiple_by)
 
-    trans_err = trans_err/100
-    data_bin = gen_trans_err(data_bin, math.ceil(bit_count * trans_err))
-    print("Po przekłamaniu losowych bitów: ")
-    print(data_bin)
+    # Przekłamanie losowych bitów
+    data_bin, seed = gen_trans_err(data_bin, trans_err, 123)
 
-    # wyświetlenie obrazu z przekłamanymi bitami
-    bw_image = bin_to_bw(data_bin)
-    show_img(bw_image)
+    # Wyświetlenie zakłóconego obrazu
+    distorted_img = bin_to_bw(demultiple_bits(data_bin, multiple_by), size)
+    show_img(distorted_img)
+
+    # Naprawa błędów
+    fixed_data_bin = demultiple_bits(fix_multiple_bits(data_bin, multiple_by), multiple_by)
+
+    # Wyświetlenie naprawionego obrazu
+    fixed_img = bin_to_bw(fixed_data_bin, size)
+    show_img(fixed_img)
 
 if __name__ == '__main__':
     signal.signal(signal.SIGINT, signal_handler)
