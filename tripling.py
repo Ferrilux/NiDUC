@@ -103,7 +103,7 @@ def main():
     file = 'example.jpg'
     trans_err = 5 # liczba bitów do przekłamania w procentach
     multiple_by = 3 # liczba powielenia kazdego bitu
-    
+
     # wczytanie pliku jpg w skali szarości
     image = cv2.imread(file, 0)
     show_img(image)
@@ -119,7 +119,7 @@ def main():
     data_bin = multiple_bits(data_bin, multiple_by)
 
     # Przekłamanie losowych bitów
-    data_bin, seed = gen_trans_err(data_bin, trans_err, 123)
+    data_bin, _ = gen_trans_err(data_bin, trans_err)
 
     # Wyświetlenie zakłóconego obrazu
     distorted_img = bin_to_bw(demultiple_bits(data_bin, multiple_by), size)
