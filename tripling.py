@@ -54,8 +54,8 @@ def gen_trans_err(data_bin, bit_cnt):
 
 def main():
     file = 'example.jpg'
-    trans_err = 5
-    
+    trans_err = 5 # liczba bitów do przekłamania w procentach
+
     # wczytanie pliku jpg w skali szarości
     image = cv2.imread(file, 0)
     show_img(image)
@@ -64,7 +64,7 @@ def main():
     bw_image = img_to_bw(image)
     show_img(bw_image)
 
-    # przekłamanie losowych bitów bitów
+    # przekłamanie losowych bitów
     data_bin = bw_to_bin(bw_image)
     print(data_bin)
 
