@@ -33,7 +33,7 @@ def bw_to_bin(image):
         for j in range(size_y):
             if image[i][j]:
                 bin_out.append(1)
-            else: 
+            else:
                 bin_out.append(0)
     return {'x': size_x, 'y': size_y}, bin_out
 
@@ -53,11 +53,13 @@ def bin_to_bw(bin_in, size):
 def gen_trans_err(data_bin, err_percent, seed=None):
     length = len(data_bin)
     bit_cnt = math.ceil(err_percent * len(data_bin) / 100)
-    
+
+    # jeśli nie podano ziarna generowanie losowego ziarna w zakresie [0, INT_MAX]
     if not seed:
         seed = random.randint(0, sys.maxsize * 2 + 1)
+    # użycie ziarna do generowania losowości
     random.seed(seed)
-    
+
     for _ in range(bit_cnt):
         rand_l = random.randint(0, length-1)
 
