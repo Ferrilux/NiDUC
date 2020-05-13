@@ -99,7 +99,7 @@ def append_parity(data):
 def compute_parity(bin_in, positions):
     temp = ""
     for i in positions:
-        temp += positions[i]
+        temp += bin_in[i]
     
     return str(str.count(temp, "1") % 2)
 
@@ -119,8 +119,8 @@ def main():
     size, data_bin = img_to_bin(image)
 
     # Zakodowanie bitów za pomocą kodu Hamminga
-    #data_bin = encode_Hamming()
-
+    data_bin = encode_Hamming(data_bin)
+    print(data_bin)
     # # Przekłamanie losowych bitów
     # data_bin, _ = gen_trans_err(data_bin, trans_err)
 
