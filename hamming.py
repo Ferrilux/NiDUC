@@ -105,7 +105,15 @@ def compute_parity(bin_in, positions):
 
 # odkodowanie bitów za pomocą kodu Hamminga (7,4)
 def decode_Hamming(bin_in):
-    return
+    errors = 0
+    corrected = 0
+
+    while len(bin_in) >= 7:
+        new_data = bin_in[0:7]
+
+        bin_in = bin_in[7:]
+
+    return new_data
 
 def main():
     file = 'example.jpg'
@@ -120,20 +128,16 @@ def main():
 
     # Zakodowanie bitów za pomocą kodu Hamminga
     data_bin = encode_Hamming(data_bin)
-    print(data_bin)
-    # # Przekłamanie losowych bitów
-    # data_bin, _ = gen_trans_err(data_bin, trans_err)
 
-    # # Wyświetlenie zakłóconego obrazu
-    # distorted_img = bin_to_img(demultiple_bits(data_bin, multiple_by), size)
-    # show_img(distorted_img)
+    # Przekłamanie losowych bitów
+    data_bin, _ = gen_trans_err(data_bin, trans_err)
 
-    # # Naprawa błędów
-    # fixed_data = demultiple_bits(fix_multiple_bits(data_bin, multiple_by), multiple_by)
+    # Odkodowanie bitów
+    data_bin = decode_Hamming(data_bin)
 
-    # # Wyświetlenie naprawionego obrazu
-    # fixed_img = bin_to_img(fixed_data, size)
-    # show_img(fixed_img)
+    # Wyświetlenie naprawionego obrazu
+    fixed_img = bin_to_img(data_bin, size)
+    show_img(fixed_img)
 
 if __name__ == '__main__':
     signal.signal(signal.SIGINT, signal_handler)
