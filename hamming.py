@@ -72,11 +72,13 @@ def gen_trans_err(bin_in, err_percent, seed=None):
 
 
 # zakodowanie bitów za pomocą kodu Hamminga (7,4)
+# skaczemy co 4 bity i kodujemy je
 def encode_Hamming(bin_in):
     
     while len(bin_in) >= 4:
         new_data = bin_in[0:4]
         append_parity(new_data)
+        bin_in = bin_in[4:]
 
     return new_data
 
@@ -93,7 +95,7 @@ def append_parity(data):
     return p1 + p2 + data[0] + p3 + data[1] + data[2] + data[3] 
 
 # obliczenie parzystości 
-# positions przekazuje, których bitów chcemy obliczyć parzystość
+# positions przekazuje, dla których bitów chcemy obliczyć parzystość
 def compute_parity(bin_in, positions):
     temp = ""
     for i in positions:
