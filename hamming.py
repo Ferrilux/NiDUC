@@ -3,7 +3,7 @@ import signal
 import random
 import math
 import numpy as np
-import cv2
+import  cv2
 
 # obsługa przerwań
 def signal_handler(sig, frame):
@@ -74,10 +74,10 @@ def gen_trans_err(bin_in, err_percent, seed=None):
 # zakodowanie bitów za pomocą kodu Hamminga (7,4)
 # skaczemy co 4 bity i kodujemy je
 def encode_Hamming(bin_in):
-    
+    new_data = ""
+
     while len(bin_in) >= 4:
-        new_data = bin_in[0:4]
-        append_parity(new_data)
+        new_data += append_parity(bin_in[0:4])
         bin_in = bin_in[4:]
 
     return new_data
