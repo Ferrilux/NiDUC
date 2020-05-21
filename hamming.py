@@ -93,7 +93,7 @@ def add_zeros(bin_in):
     if mod4 != 0:
         if mod4 == 1:
             bin_in.append('000')
-            added_zeros = 1
+            added_zeros = 3
 
         elif mod4 == 2:
             bin_in.append('00')
@@ -101,7 +101,7 @@ def add_zeros(bin_in):
 
         elif mod4 == 3:
             bin_in.append('0')
-            added_zeros = 3
+            added_zeros = 1
 
     return bin_in, added_zeros
 
