@@ -207,6 +207,7 @@ def decode_Hamming(bin_in):
 def main():
     file = 'example_small.jpg'
     trans_err = 2  # liczba bitów do przekłamania w procentach
+    zeros = 0
 
     # Wczytanie pliku jpg w skali szarości
     image = cv2.imread(file, 0)
@@ -224,6 +225,9 @@ def main():
     # Odkodowanie bitów
     data_bin = decode_Hamming(data_bin)
 
+    # Usunięcie dodatkowych zer
+    data_bin = delete_zeros(data_bin, zeros)
+    
     # Wyświetlenie naprawionego obrazu
     fixed_img = bin_to_img(data_bin, size)
     show_img(fixed_img)
