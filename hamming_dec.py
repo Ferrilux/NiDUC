@@ -119,6 +119,7 @@ def decode_Hamming(bin_in):
     errors = 0
     corrected = 0
     new_data = ""
+    bin_in = list(bin_in)
 
     while len(bin_in) >= 7:
         p1 = compute_parity(bin_in, [2,4,6])
@@ -176,7 +177,7 @@ def decode_Hamming(bin_in):
 
 
 def main():
-    file = 'example.jpg'
+    file = 'example_small.jpg'
     trans_err = 2  # liczba bitów do przekłamania w procentach
 
     # Wczytanie pliku jpg w skali szarości
