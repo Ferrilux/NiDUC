@@ -109,11 +109,11 @@ def delete_zeros(bin_in, zeros):
     if zeros == 0:
         return bin_in
     elif zeros == 1:
-        bin_in[:-1]
+        bin_in = bin_in[:-1]
     elif zeros == 2:
-        bin_in[:-2]
+        bin_in = bin_in[:-2]
     elif zeros == 3:
-        bin_in[:-3]
+        bin_in = bin_in[:-3]
     return bin_in
 
 # dodajemy do każdych 4 bitów (d1, d2, d3, d4 ) 3 bity kontrolne (t1, t2, t3)
@@ -143,7 +143,7 @@ def compute_parity(bin_in, positions):
 # bin_in [0] jest parzystością pozycji 2 4 6
 # bin_in [1] jest parzystością pozycji 2 5 6
 # bin_in [3] jest parzystością pozycji 4 5 6
-def decode_Hamming(bin_in):
+def decode_Hamming(bin_in, zeros):
     errors = 0
     corrected = 0
     new_data = ""
@@ -201,13 +201,12 @@ def decode_Hamming(bin_in):
             new_data = new_data + bin_in[2] + bin_in[4] + bin_in[5] + bin_in[6]
         bin_in = bin_in[7:]
 
-    return new_data
+    return delete_zeros(new_data, zeros)
 
 
 def main():
     file = 'example_small.jpg'
     trans_err = 2  # liczba bitów do przekłamania w procentach
-    zeros = 0
 
     # Wczytanie pliku jpg w skali szarości
     image = cv2.imread(file, 0)
@@ -223,11 +222,8 @@ def main():
     data_bin, _ = gen_trans_err(data_bin, trans_err)
 
     # Odkodowanie bitów
-    data_bin = decode_Hamming(data_bin)
-
-    # Usunięcie dodatkowych zer
-    data_bin = delete_zeros(data_bin, zeros)
-    
+    data_bin = decode_Hamming(data_bin, zeros)
+   
     # Wyświetlenie naprawionego obrazu
     fixed_img = bin_to_img(data_bin, size)
     show_img(fixed_img)
