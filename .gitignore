@@ -1,3 +1,4 @@
 .vscode
 venv
 t.py
+__pycache__
