@@ -54,7 +54,7 @@ def delete_zeros(bin_in, zeros):
         bin_in = bin_in[:-3]
     return bin_in
 
-# dodajemy do każdych 4 bitów (d1, d2, d3, d4 ) 3 bity kontrolne (t1, t2, t3)
+# dodajemy do każdych 4 bitów (d1, d2, d3, d4 ) 3 bity kontrolne (p1, p2, p3)
 # służące do kontroli parzystości bitów oryginalnych
 # p1 = (d1 + d2 + d4) % 2
 # p2 = (d1 + d3 + d4) % 2
