@@ -8,6 +8,10 @@ import cv2
 def signal_handler(sig, frame):
     raise SystemExit
 
+# wczytanie obrazu
+def read_img(file):
+    return cv2.imread(file, 1)
+
 # wyświetlenie obrazu (klikniecie dowolnego klawisza mając
 # aktywne okno obrazu zamyka obraz i kontynuuje program)
 def show_img(image):
@@ -26,23 +30,27 @@ def img_to_bin(image):
     bin_out = ''
     for i in range(size_x):
         for j in range(size_y):
-            bin_out = bin_out + fstring.format(image[i][j])
+            bin_out = bin_out + fstring.format(image[i][j][0])
+            bin_out = bin_out + fstring.format(image[i][j][1])
+            bin_out = bin_out + fstring.format(image[i][j][2])
     return {'x': size_x, 'y': size_y}, bin_out
 
 # konwersja stringa z zerami i jedynkami na obrazek
 def bin_to_img(bin_in, size):
     helper = []
-    for i in range(int(len(bin_in)/8)):
+    for i in range(int(len(bin_in)/24)):
         helper.append('')
-        for j in range(8):
-            index = i*8 + j
+        for j in range(24):
+            index = i*24 + j
             helper[i] = helper[i] + bin_in[index]
 
-    image = np.empty([size['x'], size['y']], 'uint8')
+    image = np.empty([size['x'], size['y'], 3], 'uint8')
     for i in range(size['x']):
         for j in range(size['y']):
             index = i*size['y']+j
-            image[i][j] = int(helper[index], 2)
+            image[i][j][0] = int(helper[index][:8], 2)
+            image[i][j][1] = int(helper[index][8:16], 2)
+            image[i][j][2] = int(helper[index][16:], 2)
     return image
 
 # przekłamanie wartości podanej ilości losowych bitów
@@ -68,4 +76,10 @@ def gen_trans_err(bin_in, err_percent, seed=None):
         bin_out += value
 
     return bin_out, seed
-    
+
+def bin_diff(bin_1, bin_2):
+    diff_count = 0
+    for key, value in enumerate(bin_1):
+        if bin_2[key] != value:
+            diff_count += 1
+    return diff_count

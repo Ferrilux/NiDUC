@@ -1,12 +1,13 @@
 import signal
-import cv2
 
 from functions import (
     signal_handler,
+    read_img,
     show_img,
     img_to_bin,
     bin_to_img,
     gen_trans_err,
+    bin_diff,
 )
 
 # powielenie bitów
@@ -42,16 +43,17 @@ def fix_multiple_bits(bin_in, bit_cnt):
     return bin_out
 
 def main():
-    file = 'example.jpg'
+    file = 'example_small.jpg'
     trans_err = 2 # liczba bitów do przekłamania w procentach
     multiple_by = 3 # liczba powielenia kazdego bitu
 
-    # Wczytanie pliku jpg w skali szarości
-    image = cv2.imread(file, 0)
+    # Wczytanie obrazu z pliku
+    image = read_img(file)
     show_img(image)
 
     # Wyświetlenie obrazu
     size, data_bin = img_to_bin(image)
+    bin_before = data_bin
 
     # Powielenie bitów
     data_bin = multiple_bits(data_bin, multiple_by)
@@ -65,10 +67,13 @@ def main():
 
     # Naprawa błędów
     fixed_data = demultiple_bits(fix_multiple_bits(data_bin, multiple_by), multiple_by)
+    bin_after = fixed_data
 
     # Wyświetlenie naprawionego obrazu
     fixed_img = bin_to_img(fixed_data, size)
     show_img(fixed_img)
+
+    print('Liczba bitow niezgodnych z oryginalnym obrazem: ' + str(bin_diff(bin_before, bin_after)))
 
 if __name__ == '__main__':
     signal.signal(signal.SIGINT, signal_handler)
