@@ -51,8 +51,8 @@ def bytes_to_bin(bytes_in):
     bin_out = ''
     fstring = '{:08b}'
 
-    for _, value in enumerate(bytes_in):
-        bin_out += fstring.format(value)
+    for key, _ in enumerate(bytes_in[0]):
+        bin_out += fstring.format(bytes_in[0][key])
     return bin_out
 
 def main():
