@@ -53,6 +53,34 @@ def bin_to_img(bin_in, size):
             image[i][j][2] = int(helper[index][16:], 2)
     return image
 
+#Zmienia string reprezentujący bity na tablicę intów o wartościach pomiędzy 0 a 255
+def string_to_int (string) :
+    ile_zer = len(string) % 8
+    for i in range (ile_zer) :
+        string += '0'
+    size = len(string) / 8
+    table = [size]
+    for i in range (size) :
+        wartosc = 0
+        for j in range (8) :
+            wartosc += int(string[j]) * (2**(7-j))
+        table [i] = wartosc
+        string = string[8: ]
+    return table
+
+#zmienia tablicę intów o wartościach pomiędzy 0 a 255 na string
+def int_to_string (table) :
+    string = ''
+    for i in range (len(table)) :
+        x = table[i]
+        for j in range (8) :
+            if ( x > (2**(7-j)) ) :
+                x -= 2**(7-j)
+                string += '1'
+            else :
+                string +='0'
+    return string
+
 # przekłamanie wartości podanej ilości losowych bitów
 def gen_trans_err(bin_in, err_percent, seed=None):
     length = len(bin_in)
