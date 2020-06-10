@@ -24,13 +24,12 @@ class BCH:
         packet = data + ecc
         packet = numpy.array(packet)
 
-        return packet, ecc
+        return packet
 
     def decode(self, packet):
-        packet = bytearray(packet)
         data, ecc = packet[:-self.obj.ecc_bytes], packet[-self.obj.ecc_bytes:]
 
-        decoded = self.obj.decode(data, ecc)
+        decoded = self.obj.decode(bytearray(data), bytearray(ecc))
         decoded_data = numpy.array(decoded[1])
 
         return decoded_data
@@ -51,8 +50,8 @@ def bytes_to_bin(bytes_in):
     bin_out = ''
     fstring = '{:08b}'
 
-    for key, _ in enumerate(bytes_in[0]):
-        bin_out += fstring.format(bytes_in[0][key])
+    for key, _ in enumerate(bytes_in):
+        bin_out += fstring.format(bytes_in[key])
     return bin_out
 
 def main():
@@ -80,7 +79,7 @@ def main():
 
     # Odkodowanie bitów
     corrupted_bin = bin_to_bytes(corrupted_bin)
-    decoded_bin = bch.decode(corrupted_bin)
+    decoded_bin = bch.decode(coded_bin)
     bin_after = bytes_to_bin(decoded_bin)
 
     # Wyświetlenie naprawionego obrazu
