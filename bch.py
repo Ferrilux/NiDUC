@@ -24,13 +24,13 @@ class BCH:
         packet = data + ecc
         packet = numpy.array(packet)
 
-        return packet
+        return packet, ecc
 
     def decode(self, packet):
         packet = bytearray(packet)
         data, ecc = packet[:-self.obj.ecc_bytes], packet[-self.obj.ecc_bytes:]
 
-        decoded = self.obj.decode_BCH(data, ecc)
+        decoded = self.obj.decode(data, ecc)
         decoded_data = numpy.array(decoded[1])
 
         return decoded_data
@@ -58,11 +58,11 @@ def bytes_to_bin(bytes_in):
 def main():
     file = 'example_small.jpg'
     trans_err = 2  # liczba bitów do przekłamania w procentach
-
+   
     # Stworzenie obiektu BCH
     BCH_POLYNOMIAL = 8219
     BCH_BITS = 16
-    bch = bchlib.BCH(BCH_POLYNOMIAL,BCH_BITS)
+    bch = BCH(BCH_POLYNOMIAL,BCH_BITS)
 
     # Wczytanie pliku jpg w skali szarości
     image = read_img(file)
@@ -79,7 +79,8 @@ def main():
     corrupted_bin, _ = gen_trans_err(bytes_to_bin(coded_bin), trans_err)
 
     # Odkodowanie bitów
-    decoded_bin = bch.decode(bin_to_bytes(corrupted_bin))
+    corrupted_bin = bin_to_bytes(corrupted_bin)
+    decoded_bin = bch.decode(corrupted_bin)
     bin_after = bytes_to_bin(decoded_bin)
 
     # Wyświetlenie naprawionego obrazu
