@@ -2,3 +2,5 @@
 venv
 t.py
 __pycache__
+triple_bits.csv
+triple_seq.csv

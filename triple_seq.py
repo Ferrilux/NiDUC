@@ -1,4 +1,8 @@
 import signal
+from sys import argv
+from math import ceil
+from numpy import arange
+
 from functions import (
     signal_handler,
     read_img,
@@ -37,6 +41,34 @@ def fix_multiple_bits(bin_in, bit_cnt):
         bin_out += set_all
     return bin_out + bin_out + bin_out
 
+def test():
+    file = 'example_small.jpg'
+    multiple_by = 3 # liczba powielenia kazdego bitu
+
+    print('err,bitcnt,unfixed')
+    for i in arange(2, 10.1, 0.1):
+        trans_err = round(i, 1)
+
+        # Wczytanie obrazu z pliku
+        image = read_img(file)
+
+        _, data_bin = img_to_bin(image)
+        bin_before = data_bin
+
+        # Powielenie bitów
+        data_bin = multiple_bits(data_bin, multiple_by)
+
+        # Przekłamanie losowych bitów
+        data_bin, _ = gen_trans_err(data_bin, trans_err)
+
+        # Naprawa błędów
+        fixed_data = demultiple_bits(fix_multiple_bits(data_bin, multiple_by), multiple_by)
+        bin_after = fixed_data
+
+        bit_cnt = bin_diff(bin_before, bin_after)
+        diff_bits = round(bit_cnt*100/len(bin_after), 4)
+        print(str(trans_err) + ',' + str(bit_cnt) + ',' + format(diff_bits, '.4f'))
+
 def main():
     file = 'example_small.jpg'
     trans_err = 2 # liczba bitów do przekłamania w procentach
@@ -73,4 +105,10 @@ def main():
 if __name__ == '__main__':
     signal.signal(signal.SIGINT, signal_handler)
     signal.signal(signal.SIGTERM, signal_handler)
-    main()
+    if len(argv) > 1:
+        if argv[1] == 'test':
+            test()
+        else:
+            print('Invalid argument')
+    else:
+        main()
